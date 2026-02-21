@@ -370,7 +370,7 @@
       <div class="header">
         <div class="title">
           <h1>Spin the Wheel</h1>
-          <p class="sub">To get your theme to Aashna's bday</p>
+          <p class="sub">To get a dare</p>
         </div>
         <div class="pill"><span class="dot"></span><span id="remainingPill">Remaining: —</span></div>
       </div>
@@ -417,7 +417,7 @@
       <div class="modalBody">
         <div class="row">
           <div class="field">
-            <div class="hint">Enter your name, then hit <b>Lock it in</b> to save your name + item and remove that item from the wheel.</div>
+            <div class="hint">Enter your name, then hit <b>Lock it in</b> to save your name + dare and remove that dare from the wheel.</div>
             <input id="nameInput" type="text" placeholder="Your name" autocomplete="off" />
           </div>
         </div>
@@ -477,11 +477,18 @@
 
     // color palette (repeats)
     const COLORS = [
-      "#99004c", // red
-      "#cc0066", // orange
-      "#ff0080", // yellow
-      "#ff66b2", // blue
-      "#ffb2d8", // pink
+      "#FF2E63",
+      "#08F7FE",
+      "#39FF14",
+      "#FF6EC7",
+      "#FE019A",
+      "#FCEE09",
+      "#7DF9FF",
+      "#FF073A",
+      "#B026FF",
+      "#FF9F00",
+      "#00F5A0",
+      "#FF3CAC"
     ];
 
     /********************
@@ -550,7 +557,7 @@
         ctx.font = `800 ${Math.floor(w*0.04)}px ui-sans-serif, system-ui`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("All items removed ✨", 0, -10);
+        ctx.fillText("All dares removed ✨", 0, -10);
         ctx.font = `600 ${Math.floor(w*0.024)}px ui-sans-serif, system-ui`;
         ctx.fillStyle = "rgba(255,255,255,0.62)";
         ctx.restore();
@@ -911,7 +918,7 @@
 
           const what = document.createElement("div");
           what.className = "what";
-          what.textContent = r.item;
+          what.textContent = r.dare;
 
           left.appendChild(who);
           left.appendChild(what);
@@ -979,13 +986,13 @@
 
 
 
-    const API_URL = "https://script.google.com/macros/s/AKfycbwmRwD7MvscJwvppyUTgCo4GhrP7-vvLEK36sdiuxVwi2A5OTKG_CjG0HO_gjEPkEgH/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz7eNdXaHce1dA-QN_65PDK0GbL-x6ORwq1ph2XB4dE4txfvnUuNzTywNElf_8zf5Pg/exec";
 
 async function apiGetAll() {
   const res = await fetch(API_URL);
   const data = await res.json();
   if (!data.ok) throw new Error(data.error || "API GET failed");
-  return data.items; // [{item,takenBy,takenAt}]
+  return data.dares; // [{item,takenBy,takenAt}]
 }
 
 
@@ -994,7 +1001,7 @@ async function apiGetAll() {
 
 
 async function apiClaim(item, name) {
-  const body = new URLSearchParams({ action: "claim", item, name });
+  const body = new URLSearchParams({ action: "claim", dare:item, name });
 
   const res = await fetch(API_URL, {
     method: "POST",
@@ -1046,13 +1053,13 @@ async function syncFromSheet() {
   const items = await apiGetAll();
 
   // entries = only untaken items
-  entries = items.filter(x => !x.takenBy).map(x => x.item);
+  entries = items.filter(x => !x.takenBy).map(x => x.dare);
 
   // log = taken items (newest first)
   log = items
     .filter(x => x.takenBy)
     .sort((a,b) => (b.takenAt || "").localeCompare(a.takenAt || ""))
-    .map(x => ({ name: x.takenBy, item: x.item, timeISO: x.takenAt }));
+    .map(x => ({ name: x.takenBy, dare: x.dare, timeISO: x.takenAt }));
 
   drawWheel();
   renderLog();
